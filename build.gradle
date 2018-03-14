@@ -1,0 +1,53 @@
+apply plugin: 'java'
+apply plugin: 'application'
+apply plugin: 'idea'
+
+
+sourceCompatibility = 1.8
+version = '1.0'
+
+
+
+mainClassName = 'Main'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // tag::jetty[]
+//    compile group: 'com.github.seratch', name: 'jslack', version: '1.0.26'
+    compile group: 'com.ullink.slack', name: 'simpleslackapi', version: '1.2.0'
+
+}
+
+jar {
+    manifest {
+        attributes(
+                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
+                'Main-Class': 'Main',
+                'Implementation-Title': 'Slack example',
+                'Implementation-Version': version
+        )
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    //with jar
+
+}
+
+sourceSets {
+    main {
+        java {
+            // include self written and generated code
+            srcDirs 'src/main/java'
+        }
+    }
+    // in future add test configuration here
+}
+
+
+//delete generated source code when clean
+clean {
+    delete "build"
+}
